@@ -1,3 +1,5 @@
+#!/bin/python3
+
 from libtestset import dftbplus_runner
 from libtestset import results, input_parser
 
