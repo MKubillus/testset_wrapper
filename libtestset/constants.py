@@ -4,14 +4,14 @@ class UnitConversion:
     kcal2au = 1 / au2kcal
 
 
-class AtomicEnergiesDFTB3:
-    """Atomic electronic energies for DFTB3"""
-    c = 1.0
-    h = 0.4
-    n = 0.8
-    o = 1.2
-
-
 class Hydrogen:
     """Energy of the H2 molecule."""
-    dftb3 = 123.1
+    eat = -109.87889987999591
+    total_energy = -460.8595304429359
+
+
+# DFTB's atomic electronic energies in kcal/mol
+atomic_energies = {"c": -906.10589010466,
+                   "h": -175.49031528147,
+                   "n": -1391.15578889586,
+                   "o": -1971.61300945930}

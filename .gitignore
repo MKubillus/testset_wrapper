@@ -1,6 +1,6 @@
-.*idea
-.*venv
-.*pyc
+*idea
+*venv
+*pyc
 tests/testing_dir/
 tests/tmp/
 \#*

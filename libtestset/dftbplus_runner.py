@@ -1,4 +1,4 @@
-from libtestset.constants import UnitConversion as units
+from libtestset.constants import UnitConversion as Units
 from os import chdir, getcwd, scandir
 from os.path import join
 from pathlib import Path
@@ -150,7 +150,7 @@ class DFTBPlusDriver(object):
             for line in log:
                 if "Total energy:" in line:
                     splt = line.split()
-                    self._energy = float(splt[2]) * units.au2kcal
+                    self._energy = float(splt[2]) * Units.au2kcal
 
 
 def run_testset(set_definition, hsd, executable):

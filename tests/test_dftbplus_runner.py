@@ -8,7 +8,7 @@ import libtestset.dftbplus_runner as dftb
 import unittest
 
 
-class TestInputParser(unittest.TestCase):
+class TestDFTBPlusRunner(unittest.TestCase):
 
     def setUp(self):
         self.base_dir = getcwd()

@@ -3,10 +3,10 @@ Options:
   # All skf paths have to be absolute and the gen input geometry has to be set
   # to "in.gen" since the program will generate that file.
   DFTBPlusHSD: "dftb_in.hsd"
-  DFTBPlusPath: "~/bin/dftb+"  # Path to DFTB+ executable
+  DFTBPlusPath: "dftb+"  # Path to DFTB+ executable
 Testsets:
-  WATER27:  # Testset name
-    path: "WATER27_geom"  # Path to where geometries are located
+  Sample Energies:  # Testset name
+    path: "sample_reactions"  # Path to where geometries are located
     # Type describes what kind of test you want to perform. Currently supported
     # are 'reaction' (self-explanatory) and 'atomization' for atomization
     # energies.
@@ -16,13 +16,13 @@ Testsets:
       # none given) and all reactants are separated by the plus ("+") sign.
       # Products and educts are separated by the reaction arrow ("->").
       # For molecule names use the xyz file names without the ".xyz" suffix.
-      - equation: "2_h2o -> 2 h2o"
-        reference: "5.1"  # Value in kcal/mol
-      - equation: "3_h2o -> 3 h2o"
-        reference: "9.6"
-  G2/97:
-    path: "G2_geom"
-    type: "atomization"
+      - equation: "c2h6 + h2o -> c2h5oh + h2"
+        reference: -24.300
+      - equation: "2 c2h6 + 2 h2o -> 2 c2h5oh + 2 h2"
+        reference: -48.600
+  Sample Energies:
+    path: "sample_energies"
+    type: "atomization"  # Needs no further input.
     references:
       ch4: 419.7
       c2h6: 711.4

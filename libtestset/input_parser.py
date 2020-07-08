@@ -15,6 +15,7 @@ def load(filename):
     """Main driver function to load the input."""
     if not exists(filename):
         write_template(filename)
+        exit()
     with open(filename, "r") as infile:
         settings = yaml.safe_load(infile)
     if not exists(settings["Options"]["DFTBPlusHSD"]):
@@ -30,7 +31,7 @@ def write_template(filename):
     base_path = dirname(getfile(currentframe()))
     template_path = join(base_path, "input_template.yml")
     copy2(template_path, filename)
-    print("An example input file was "
+    print("No input file found. An example input file was "
           "written to %s.\nTerminating..." % filename)
     try:
         exit()
