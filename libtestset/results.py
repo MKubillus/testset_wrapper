@@ -272,6 +272,8 @@ def _write_reactions(reac_list, set_name):
                      "DFTB3": str(np.round(reaction.energy, 2)),
                      "Deviation": str(np.round(reaction.deviation, 2))
                      })
+    print("Writing results of reaction test set %s "
+          "to file %s" % (set_name, "%s.csv" % set_name))
     with open("%s.csv" % set_name, "w") as out:
         writer = csv.DictWriter(out, fieldnames=categories)
         writer.writeheader()
@@ -289,6 +291,8 @@ def _write_atomizations(eat_list, set_name):
                      "DFTB3": str(np.round(energy.eat, 2)),
                      "Deviation": str(np.round(energy.deviation, 2))
                      })
+    print("Writing results of atomization energy test set %s "
+          "to file %s" % (set_name, "%s.csv" % set_name))
     with open("%s.csv" % set_name, "w") as out:
         writer = csv.DictWriter(out, fieldnames=categories)
         writer.writeheader()
@@ -307,6 +311,7 @@ def _write_deviations(deviations):
                      "RMSD": str(np.round(dev.rmsd, 2)),
                      "MAX": str(np.round(dev.max, 2))
                      })
+    print("Writing deviations for all test sets to file deviations.csv")
     with open("deviations.csv", "w") as out:
         writer = csv.DictWriter(out, fieldnames=categories)
         writer.writeheader()
