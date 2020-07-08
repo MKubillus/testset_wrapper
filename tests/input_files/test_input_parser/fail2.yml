@@ -1,0 +1,14 @@
+Options:
+  DFTBPlusHSD: "dftbplus.hsd"  # Input file to use for all calculations
+  DFTBPlusPath: "~/bin/wombat"  # Path to DFTB+ executable
+Testsets:
+  WATER27:  # Testset name
+    directory: "WATER27_geom"  # Path to where geometries are located
+    reactions:  # List reactions for the testset
+      # Reaction equations all need a stochiometric factor (1 is assumed if
+      # none given) and all reactants are separated by the plus ("+") sign.
+      # Products and educts are separated by the reaction arrow ("->").
+      - equation: "2_h2o -> 2 h2o"
+        reference: "5.1"  # Value in kcal/mol
+      - equation: "3_h2o -> 3 h2o"
+        reference: "9.6"
