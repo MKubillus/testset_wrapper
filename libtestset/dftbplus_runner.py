@@ -1,8 +1,11 @@
+from libtestset.constants import UnitConversion as units
 from os import chdir, getcwd, scandir
 from os.path import join
+from pathlib import Path
+from random import choice
 from shutil import copy2, rmtree
+from string import ascii_lowercase
 from subprocess import CalledProcessError
-from tempfile import TemporaryDirectory
 
 import subprocess
 
@@ -48,12 +51,13 @@ class DFTBPlusDriver(object):
 
     def run(self):
         """Sets up the directory and runs the DFTB+ calculation."""
+        Path(self.exec_dir).mkdir(parents=True, exist_ok=True)
         self._write_inputs()
         chdir(self.exec_dir)
         with open("dftbplus_output.log", "w") as fid:
             try:
                 subprocess.run([self.exe], stdout=fid, stderr=fid,
-                               cwd=getcwd(), check=True)
+                               cwd=getcwd(), check=True, shell=True)
             except CalledProcessError:
                 msg = "DFTB+ crashed on runtime, please check your input file!"
                 raise DFTBPlusRunnerError(self.exec_dir, msg)
@@ -70,7 +74,6 @@ class DFTBPlusDriver(object):
                     msg = ("Geometry did not converge, check your "
                            "geometry or convergence criteria!")
                     raise DFTBPlusRunnerError(self.exec_dir, msg)
-
         self._parse_log()
         chdir(self.base_dir)
 
@@ -147,7 +150,7 @@ class DFTBPlusDriver(object):
             for line in log:
                 if "Total energy:" in line:
                     splt = line.split()
-                    self._energy = float(splt[2]) * 627.509
+                    self._energy = float(splt[2]) * units.au2kcal
 
 
 def run_testset(set_definition, hsd, executable):
@@ -158,19 +161,26 @@ def run_testset(set_definition, hsd, executable):
         file.
     @:param hsd: Path to dftb_in.hsd
     @:param executable: Path to DFTB+ executable.
+
+    @:returns Dictionary of systems and their total energies in kcal/mol.
     """
     set_path = join(getcwd(), set_definition["path"])
     systems = dict()
     for entry in scandir(set_path):
         if entry.is_file() and entry.name.endswith(".xyz"):
-            sys_name = entry.name[:-4],
+            sys_name = entry.name[:-4]
             xyz = entry.path
-            exec_dir = TemporaryDirectory(prefix="dftb+_run_")
+            exec_dir = get_random_folder(prefix="dftb+_run_")
             driver = DFTBPlusDriver(executable, hsd, xyz, exec_dir)
             driver.run()
             systems[sys_name] = driver.energy
             rmtree(exec_dir)
     return systems
+
+
+def get_random_folder(prefix="", length=8):
+    random_string = "".join(choice(ascii_lowercase) for _i in range(length))
+    return prefix + random_string
 
 
 if __name__ == "__main__":

@@ -7,7 +7,10 @@ def main():
     calculations = dict()
     for testset in settings["Testsets"].keys():
         set_definition = settings["Testsets"][testset]
-        calculations[testset] = dftbplus_runner.run_testset(set_definition)
+        hsd = settings["Options"]["DFTBPlusHSD"]
+        dftbplus = settings["Options"]["DFTBPlusPath"]
+        calculations[testset] = dftbplus_runner.run_testset(set_definition,
+                                                            hsd, dftbplus)
     results.write_results(settings, calculations)
 
 
