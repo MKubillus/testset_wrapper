@@ -3,7 +3,7 @@ Options:
   # All skf paths have to be absolute and the gen input geometry has to be set
   # to "in.gen" since the program will generate that file.
   DFTBPlusHSD: "dftb_in.hsd"
-  DFTBPlusPath: "~/bin/dftb+"  # Path to DFTB+ executable
+  DFTBPlusPath: "dftb+"  # Path to DFTB+ executable
 Testsets:
   WATER27:  # Testset name
     path: "WATER27_geom"  # Path to where geometries are located
