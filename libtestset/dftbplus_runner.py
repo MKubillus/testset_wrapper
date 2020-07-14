@@ -1,5 +1,5 @@
 from libtestset.constants import UnitConversion as Units
-from os import chdir, getcwd, scandir
+from os import chdir, environ, getcwd, scandir
 from os.path import join
 from pathlib import Path
 from random import choice
@@ -56,7 +56,7 @@ class DFTBPlusDriver(object):
         chdir(self.exec_dir)
         with open("dftbplus_output.log", "w") as fid:
             try:
-                subprocess.run([self.exe], stdout=fid, stderr=fid,
+                subprocess.run([self.exe], stdout=fid, stderr=fid, env=environ,
                                cwd=getcwd(), check=True, shell=True)
             except CalledProcessError:
                 msg = "DFTB+ crashed on runtime, please check your input file!"
