@@ -7,9 +7,15 @@ Python script to run testsets in bulk with simple input files.
 Requirements
 ------------
 
-Python 3.5 or higher
+- Python 3.5 or higher
+- DFTB+ (any version)
 
-DFTB+ (any version)
+
+For calculations with DTNN:
+
+- ASE >= 3.19
+- torch >= 1.5
+- SchNetPack >= 0.3
 
 
 Installation

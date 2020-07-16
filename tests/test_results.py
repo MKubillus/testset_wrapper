@@ -110,7 +110,52 @@ class TestResults(unittest.TestCase):
                                         "c4h8": 1155.2}
                    }
         results.write_results(testsets, systems)
-        assert(exists("deviations.csv"))
+        assert(exists("DFTB_deviations.csv"))
+        assert(exists("Sample Energies.csv"))
+        assert(exists("Sample Reactions.csv"))
+        chdir(self.base_dir)
+
+    def test_write_results_with_dtnn(self):
+        exec_dir = join(self.exec_dir, "write_results_with_dtnn")
+        Path(exec_dir).mkdir(parents=True, exist_ok=True)
+        chdir(exec_dir)
+        testsets = {
+            "Sample Energies": {
+                "path": join("../../", self.input_dir, "samples"),
+                "type": "atomization",
+                "references": {
+                    "ch4": 419.7,
+                    "c2h6": 711.4
+                }},
+            "Sample Reactions": {
+                "path": join("../../", self.input_dir, "samples"),
+                "type": "reaction",
+                "reactions": [
+                    {"equation": "c2h6 + h2o -> c2h5oh + h2",
+                     "reference": -24.300},
+                    {"equation": "2 c2h6 + 2 h2o -> 2 c2h5oh + 2 h2",
+                     "reference": -48.600}
+                ]
+            }
+        }
+        dftb_systems = {"Sample Energies": {"c2h6": -3580.085689008599,
+                                            "ch4": -2028.4592464933714},
+                   "Sample Reactions": {"c2h6": 712.5,
+                                        "h2o": 232.4,
+                                        "c2h5oh": 809.0,
+                                        "h2": 109.8,
+                                        "c4h8": 1155.2}
+                   }
+        dtnn_systems = {"Sample Energies": {"c2h6": -3613.830,
+                                            "ch4": -2040.619},
+                        "Sample Reactions": {"c2h6": 712.5,
+                                             "h2o": 232.4,
+                                             "c2h5oh": 809.0,
+                                             "h2": 109.8,
+                                             "c4h8": 1155.2}
+                   }
+        results.write_results(testsets, dftb_systems, dtnn_systems)
+        assert(exists("DFTB_deviations.csv"))
         assert(exists("Sample Energies.csv"))
         assert(exists("Sample Reactions.csv"))
         chdir(self.base_dir)

@@ -227,23 +227,38 @@ class Deviations(object):
         return self._max
 
 
-def write_results(testsets, calculations):
-    deviations = dict()
+def write_results(testsets, dftb_calcs, dtnn_calcs=None):
+    dftb_deviations = dict()
+    dtnn_deviations = dict()
     for set_name in testsets.keys():
         set_type = testsets[set_name]["type"]
-        systems = calculations[set_name]
+        dftb_systems = dftb_calcs[set_name]
+        if dtnn_calcs:
+            dtnn_systems = dtnn_calcs[set_name]
         if set_type == "reaction":
             inputs = testsets[set_name]["reactions"]
-            reactions = _get_reactions(systems, inputs)
-            deviations[set_name] = Deviations(reactions)
-            _write_reactions(reactions, set_name)
+            dftb_reacs = _get_reactions(dftb_systems, inputs)
+            dftb_deviations[set_name] = Deviations(dftb_reacs)
+            if dtnn_calcs:
+                dtnn_reacs = _get_reactions(dtnn_systems, inputs)
+                dtnn_deviations[set_name] = Deviations(dtnn_reacs)
+                _write_reactions(set_name, dftb_reacs, dtnn_reacs)
+            else:
+                _write_reactions(set_name, dftb_reacs)
         elif set_type == "atomization":
             set_path = testsets[set_name]["path"]
             inputs = testsets[set_name]["references"]
-            at_energies = _get_atomizations(systems, inputs, set_path)
-            deviations[set_name] = Deviations(at_energies)
-            _write_atomizations(at_energies, set_name)
-    _write_deviations(deviations)
+            dftb_eats = _get_atomizations(dftb_systems, inputs, set_path)
+            dftb_deviations[set_name] = Deviations(dftb_eats)
+            if dtnn_calcs:
+                dtnn_eats = _get_atomizations(dtnn_systems, inputs, set_path)
+                dtnn_deviations[set_name] = Deviations(dtnn_eats)
+                _write_atomizations(set_name, dftb_eats, dtnn_eats)
+            else:
+                _write_atomizations(set_name, dftb_eats)
+    _write_deviations(dftb_deviations, "DFTB_deviations.csv")
+    if dtnn_calcs:
+        _write_deviations(dtnn_deviations, "DTNN_deviations.csv")
 
 
 def _get_reactions(systems, inputs):
@@ -263,14 +278,38 @@ def _get_atomizations(systems, inputs, set_path):
     return eat_list
 
 
-def _write_reactions(reac_list, set_name):
-    categories = ["Reaction", "Reference", "DFTB3", "Deviation"]
+def _write_reactions(set_name, dftb_reacs, dtnn_reacs=None):
+    if dtnn_reacs:
+        _write_reactions_with_dtnn(set_name, dftb_reacs, dtnn_reacs)
+    else:
+        categories = ["Reaction", "Reference", "DFTB3", "ΔDFTB3"]
+        data = []
+        for reaction in dftb_reacs:
+            data.append({"Reaction": reaction.reaction,
+                         "Reference": str(np.round(reaction.ref, 2)),
+                         "DFTB3": str(np.round(reaction.energy, 2)),
+                         "ΔDFTB3": str(np.round(reaction.deviation, 2))
+                         })
+        print("Writing results of reaction test set %s "
+              "to file %s" % (set_name, "%s.csv" % set_name))
+        with open("%s.csv" % set_name, "w") as out:
+            writer = csv.DictWriter(out, fieldnames=categories)
+            writer.writeheader()
+            for entry in data:
+                writer.writerow(entry)
+
+
+def _write_reactions_with_dtnn(set_name, dftb_reacs, dtnn_reacs):
+    categories = ["Reaction", "Reference", "DFTB3", "DTNN", "ΔDFTB3", "ΔDTNN"]
     data = []
-    for reaction in reac_list:
-        data.append({"Reaction": reaction.reaction,
-                     "Reference": str(np.round(reaction.ref, 2)),
-                     "DFTB3": str(np.round(reaction.energy, 2)),
-                     "Deviation": str(np.round(reaction.deviation, 2))
+    for i, dftb_reaction in enumerate(dftb_reacs):
+        dtnn_reaction = dtnn_reacs[i]
+        data.append({"Reaction": dftb_reaction.reaction,
+                     "Reference": str(np.round(dftb_reaction.ref, 2)),
+                     "DFTB3": str(np.round(dftb_reaction.energy, 2)),
+                     "DTNN": str(np.round(dtnn_reaction.energy, 2)),
+                     "ΔDFTB3": str(np.round(dftb_reaction.deviation, 2)),
+                     "ΔDTNN": str(np.round(dtnn_reaction.deviation, 2))
                      })
     print("Writing results of reaction test set %s "
           "to file %s" % (set_name, "%s.csv" % set_name))
@@ -281,15 +320,40 @@ def _write_reactions(reac_list, set_name):
             writer.writerow(entry)
 
 
-def _write_atomizations(eat_list, set_name):
-    categories = ["System", "Reference", "DFTB3", "Deviation"]
+def _write_atomizations(set_name, dftb_eats, dtnn_eats=None):
+    if dtnn_eats:
+        _write_atomizations_with_dtnn(set_name, dftb_eats, dtnn_eats)
+    else:
+        categories = ["System", "Reference", "DFTB3", "ΔDFTB3"]
+        data = []
+        for energy in dftb_eats:
+            sys_name = basename(energy.xyz)[:-4]
+            data.append({"System": sys_name,
+                         "Reference": str(np.round(energy.ref, 2)),
+                         "DFTB3": str(np.round(energy.eat, 2)),
+                         "ΔDFTB3": str(np.round(energy.deviation, 2))
+                         })
+        print("Writing results of atomization energy test set %s "
+              "to file %s" % (set_name, "%s.csv" % set_name))
+        with open("%s.csv" % set_name, "w") as out:
+            writer = csv.DictWriter(out, fieldnames=categories)
+            writer.writeheader()
+            for entry in data:
+                writer.writerow(entry)
+
+
+def _write_atomizations_with_dtnn(set_name, dftb_eats, dtnn_eats=None):
+    categories = ["System", "Reference", "DFTB3", "DTNN", "ΔDFTB3", "ΔDTNN"]
     data = []
-    for energy in eat_list:
-        sys_name = basename(energy.xyz)[:-4]
+    for i, dftb_energy in enumerate(dftb_eats):
+        dtnn_energy = dtnn_eats[i]
+        sys_name = basename(dftb_energy.xyz)[:-4]
         data.append({"System": sys_name,
-                     "Reference": str(np.round(energy.ref, 2)),
-                     "DFTB3": str(np.round(energy.eat, 2)),
-                     "Deviation": str(np.round(energy.deviation, 2))
+                     "Reference": str(np.round(dftb_energy.ref, 2)),
+                     "DFTB3": str(np.round(dftb_energy.eat, 2)),
+                     "DTNN": str(np.round(dtnn_energy.eat, 2)),
+                     "ΔDFTB3": str(np.round(dftb_energy.deviation, 2)),
+                     "ΔDTNN": str(np.round(dtnn_energy.deviation, 2)),
                      })
     print("Writing results of atomization energy test set %s "
           "to file %s" % (set_name, "%s.csv" % set_name))
@@ -300,19 +364,19 @@ def _write_atomizations(eat_list, set_name):
             writer.writerow(entry)
 
 
-def _write_deviations(deviations):
+def _write_deviations(dftb_deviations, filename):
     categories = ["Set Name", "MSD", "MAD", "RMSD", "MAX"]
     data = []
-    for testset in deviations.keys():
-        dev = deviations[testset]
+    for testset in dftb_deviations.keys():
+        dev = dftb_deviations[testset]
         data.append({"Set Name": testset,
                      "MSD": str(np.round(dev.msd, 2)),
                      "MAD": str(np.round(dev.mad, 2)),
                      "RMSD": str(np.round(dev.rmsd, 2)),
                      "MAX": str(np.round(dev.max, 2))
                      })
-    print("Writing deviations for all test sets to file deviations.csv")
-    with open("deviations.csv", "w") as out:
+    print("Writing deviations for all test sets to file %s" % filename)
+    with open(filename, "w") as out:
         writer = csv.DictWriter(out, fieldnames=categories)
         writer.writeheader()
         for entry in data:
