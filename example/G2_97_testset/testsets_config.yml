@@ -2,7 +2,7 @@ Options:
   DFTBPlusHSD: "dftb_in.hsd"
   DFTBPlusPath: "dftb+"
 Testsets:
-  G2/97:
+  G2_97_Eat:
     path: "G2_97"
     type: "atomization"
     references:
@@ -71,3 +71,202 @@ Testsets:
       n2_nitrogen: 227.8
       n2o1_nitrousoxide: 270.8
       o2_oxygen1: 91.4
+  G2_97_dist:
+    path: "G2_97"
+    type: "distance"
+    references:
+      c1h1n1_hydrogencyanide:
+        atoms: 1,3
+        reference: 1.146
+      c1h2_methylene:
+        atoms: 1,2
+        reference: 1.11
+      c1h2o1_formaldehyde:
+        atoms: 2,3
+        reference: 1.107
+      c1h2o2_formicacid:
+        atoms: 4,5
+        reference: 0.97
+      c1h3n1_methanimine:
+        atoms: 1,4
+        reference: 1.09
+      c1h3n1o2_methylnitrite:
+        atoms: 1,4
+        reference: 1.09
+      c1h3n1o2_nitromethane:
+        atoms: 2,7
+        reference: 1.218
+      c1h4_methane:
+        atoms: 1,2
+        reference: 1.088
+      c1h4o1_methanol:
+        atoms: 5,6
+        reference: 0.961
+      c1h5n1_methylamine:
+        atoms: 1,4
+        reference: 1.091
+      c1o1_carbonmonoxide:
+        atoms: 1,2
+        reference: 1.126
+      c1o2_carbondioxide:
+        atoms: 1,2
+        reference: 1.16
+      c2h2_ethyne:
+        atoms: 1,3
+        reference: 1.062
+      c2h2o1_ketene:
+        atoms: 3,4
+        reference: 1.078
+      c2h2o2_glyoxal:
+        atoms: 1,3
+        reference: 1.106
+      c2h3n1_acetonitrile:
+        atoms: 1,4
+        reference: 1.09
+      c2h4_ethene:
+        atoms: 1,3
+        reference: 1.083
+      c2h4o1_acetaldehyde:
+        atoms: 1,2
+        reference: 1.089
+      c2h4o1_oxirane:
+        atoms: 1,2
+        reference: 1.085
+      c2h4o2_aceticacid:
+        atoms: 5,6
+        reference: 1.09
+      c2h4o2_methylformate:
+        atoms: 3,8
+        reference: 1.097
+      c2h5n1_aziridine:
+        atoms: 1,2
+        reference: 1.014
+      c2h5n1o1_acetamide:
+        atoms: 1,7
+        reference: 1.091
+      c2h6_ethane:
+        atoms: 1,3
+        reference: 1.091
+      c2h6o1_dimethylether:
+        atoms: 2,3
+        reference: 1.098
+      c2h6o1_ethanol:
+        atoms: 1,3
+        reference: 1.09
+      c2h7n1_dimethylamine:
+        atoms: 3,5
+        reference: 1.102
+      c2h7n1_ethylamine:
+        atoms: 1,9
+        reference: 1.014
+      c2n2_cyanogen:
+        atoms: 1,2
+        reference: 1.375
+      c3h3n1_acrylonitrile:
+        atoms: 5,6
+        reference: 1.081
+      c3h4_allene:
+        atoms: 1,4
+        reference: 1.083
+      c3h4_cyclopropene:
+        atoms: 5,6
+        reference: 1.088
+      c3h4_propyne:
+        atoms: 3,4
+        reference: 1.061
+      c3h6_cyclopropane:
+        atoms: 1,4
+        reference: 1.081
+      c3h6_propene:
+        atoms: 3,8
+        reference: 1.093
+      c3h6o1_acetone:
+        atoms: 1,2
+        reference: 1.092
+      c3h8_propane:
+        atoms: 1,8
+        reference: 1.092
+      c3h8o1_isopropanol:
+        atoms: 2,7
+        reference: 1.091
+      c3h8o1_methylethylether:
+        atoms: 1,3
+        reference: 1.09
+      c3h9n1_trimethylamine:
+        atoms: 2,5
+        reference: 1.105
+      c4h10_butane:
+        atoms: 1,5
+        reference: 1.094
+      c4h10_isobutane:
+        atoms: 3,11
+        reference: 1.092
+      c4h4o1_furan:
+        atoms: 3,9
+        reference: 1.361
+      c4h5n1_pyrrole:
+        atoms: 5,9
+        reference: 1.076
+      c4h6_13butadiene:
+        atoms: 1,5
+        reference: 1.086
+      c4h6_2butyne:
+        atoms: 3,5
+        reference: 1.092
+      c4h6_bicyclobutane:
+        atoms: 3,8
+        reference: 1.084
+      c4h6_cyclobutene:
+        atoms: 3,7
+        reference: 1.091
+      c4h6_methylenecyclopropane:
+        atoms: 8,9
+        reference: 1.083
+      c4h8_cyclobutane:
+        atoms: 1,5
+        reference: 1.09
+      c4h8_isobutene:
+        atoms: 10,11
+        reference: 1.082
+      c5h5n1_pyridine:
+        atoms: 2,7
+        reference: 1.082
+      c5h8_spiropentane:
+        atoms: 2,6
+        reference: 1.082
+      c6h6_benzene:
+        atoms: 1,7
+        reference: 1.082
+      h1n1o2_nitrousacid:
+        atoms: 1,2
+        reference: 0.979
+      h1n1o3_nitricacid:
+        atoms: 5,2
+        reference: 0.971
+      h2_hydrogen:
+        atoms: 1,2
+        reference: 0.743
+      h2n2_transdiazene:
+        atoms: 3,1
+        reference: 1.033
+      h2o1_water:
+        atoms: 1,2
+        reference: 0.961
+      h2o2_hydrogenperoxide:
+        atoms: 1,2
+        reference: 0.966
+      h3n1_ammonia:
+        atoms: 1,2
+        reference: 1.014
+      h4n2_hydrazine:
+        atoms: 1,3
+        reference: 1.015
+      n2_nitrogen:
+        atoms: 1,2
+        reference: 1.091
+      n2o1_nitrousoxide:
+        atoms: 2,3
+        reference: 1.183
+      o2_oxygen1:
+        atoms: 1,2
+        reference: 1.206
