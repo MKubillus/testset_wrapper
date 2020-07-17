@@ -17,6 +17,8 @@ For calculations with DTNN:
 - torch >= 1.5
 - SchNetPack >= 0.3
 
+Note: For any calculations with DTNN, proprietary GPU drivers (usually distributed by vendor) have to be installed.
+
 
 Installation
 ------------
