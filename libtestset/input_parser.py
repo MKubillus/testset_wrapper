@@ -1,5 +1,6 @@
 from inspect import currentframe, getfile
-from os.path import dirname, exists, join
+from os import access, environ, pathsep, X_OK
+from os.path import dirname, exists, isfile, isdir, join
 from shutil import copy2
 from sys import exit
 
@@ -21,9 +22,24 @@ def load(filename):
     if not exists(settings["Options"]["DFTBPlusHSD"]):
         msg = "DFTBPlusHSD file at %s does not exist."
         raise InputError(msg % settings["Options"]["DFTBPlusHSD"])
-    if not exists(settings["Options"]["DFTBPlusPath"]):
+    # Check for DFTB+ executable in OS environment
+    exe_name = settings["Options"]["DFTBPlusPath"]
+    exe_path = False
+    for path in environ["PATH"].split(pathsep):
+        probe_path = join(path, exe_name)
+        if isfile(probe_path) and access(probe_path, X_OK):
+            exe_path = probe_path
+    if not exe_path:
         msg = "DFTBPlusPath executable at %s does not exist."
         raise InputError(msg % settings["Options"]["DFTBPlusPath"])
+    if "DTNN" in settings["Options"]:
+        dtnn_settings = settings["Options"]["DTNN"]
+        if not isdir(dtnn_settings["DTNNSkfPath"]):
+            msg = "DTNNSkfPath at %s does not exist or is no directory!"
+            raise InputError(msg % dtnn_settings["DTNNSkfPath"])
+        if not exists(dtnn_settings["DTNNModel"]):
+            msg = "DTNNModel file at %s could not be found."
+            raise InputError(msg % dtnn_settings["DTNNModel"])
     return settings
 
 

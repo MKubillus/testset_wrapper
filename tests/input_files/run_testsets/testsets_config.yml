@@ -3,7 +3,7 @@ Options:
   # All skf paths have to be absolute and the gen input geometry has to be set
   # to "in.gen" since the program will generate that file.
   DFTBPlusHSD: "dftb_in.hsd"
-  DFTBPlusPath: "/home/mkubillus/bin/dftb+"  # Path to DFTB+ executable
+  DFTBPlusPath: "dftb+"  # Path to DFTB+ executable
 Testsets:
   Sample Reactions:  # Testset name
     path: "sample_reactions"  # Path to where geometries are located

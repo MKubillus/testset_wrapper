@@ -7,3 +7,4 @@ tests/tmp/
 \.\#*
 *__pycache__*
 tmp/
+*dtnn

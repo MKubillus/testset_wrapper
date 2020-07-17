@@ -1,12 +1,13 @@
 from libtestset.constants import UnitConversion as Units
-from os import chdir, getcwd, scandir
-from os.path import join
+from os import chdir, environ, getcwd, scandir
+from os.path import isfile, join
 from pathlib import Path
 from random import choice
 from shutil import copy2, rmtree
 from string import ascii_lowercase
 from subprocess import CalledProcessError
 
+import numpy as np
 import subprocess
 
 
@@ -48,6 +49,8 @@ class DFTBPlusDriver(object):
         self.exec_dir = exec_dir
         self.base_dir = getcwd()
         self._energy = None
+        self._atoms = []
+        self._coords = []
 
     def run(self):
         """Sets up the directory and runs the DFTB+ calculation."""
@@ -56,7 +59,7 @@ class DFTBPlusDriver(object):
         chdir(self.exec_dir)
         with open("dftbplus_output.log", "w") as fid:
             try:
-                subprocess.run([self.exe], stdout=fid, stderr=fid,
+                subprocess.run([self.exe], stdout=fid, stderr=fid, env=environ,
                                cwd=getcwd(), check=True, shell=True)
             except CalledProcessError:
                 msg = "DFTB+ crashed on runtime, please check your input file!"
@@ -79,8 +82,27 @@ class DFTBPlusDriver(object):
 
     @property
     def energy(self):
-        """Returns calculated system energy in kcal/mol."""
+        """Returns calculated system energy in kcal/mol.
+
+        @:returns float.
+        """
         return self._energy
+
+    @property
+    def coordinates(self):
+        """Returns the optimized geometry vectors.
+
+        @:returns numpy Nx3 ndarray.
+        """
+        return self._coords
+
+    @property
+    def atoms(self):
+        """Returns the geometry atom list.
+
+        @:returns list of strings.
+        """
+        return self._atoms
 
     @classmethod
     def xyz2gen(cls, xyz, target):
@@ -151,6 +173,20 @@ class DFTBPlusDriver(object):
                 if "Total energy:" in line:
                     splt = line.split()
                     self._energy = float(splt[2]) * Units.au2kcal
+        if not isfile("geo_end.xyz"):
+            msg = ("DFTB+ calculations in %s did not produce a geometry output "
+                   "file. Use the 'Driver' option in the DFTB+ input file for "
+                   "geometry optimizations!")
+            raise DFTBPlusRunnerError(msg % self.exec_dir)
+        vecs = []  # will be coordinates
+        with open("geo_end.xyz", "r") as xyz:
+            for line in xyz:
+                splt = line.split()
+                if len(splt) != 5:
+                    continue
+                vecs.append([float(splt[1]), float(splt[2]), float(splt[3])])
+                self._atoms.append(splt[0])
+        self._coords = np.asarray(vecs)
 
 
 def run_testset(set_definition, hsd, executable):
@@ -173,7 +209,7 @@ def run_testset(set_definition, hsd, executable):
             exec_dir = get_random_folder(prefix="dftb+_run_")
             driver = DFTBPlusDriver(executable, hsd, xyz, exec_dir)
             driver.run()
-            systems[sys_name] = driver.energy
+            systems[sys_name] = driver
             rmtree(exec_dir)
     return systems
 
