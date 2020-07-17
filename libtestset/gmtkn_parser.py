@@ -79,7 +79,6 @@ def write_geometries(subpath, output_path):
             new_file = join(newpath, f"{f}.xyz")
             #print(f"copying {old_file} to {new_file}")
             copy2(old_file, new_file)
-        break
 
 if __name__=="__main__":
     config_string = parse_gmtkn_55("/media/mila/HD1/GMTKN55", "/media/mila/HD1/GMTKN55_parsed")
