@@ -4,6 +4,7 @@ from os.path import join
 from pathlib import Path
 from shutil import rmtree
 
+import numpy as np
 import unittest
 
 
@@ -40,6 +41,15 @@ class TestDFTBPlusRunner(unittest.TestCase):
         driver = DTNNDriver(model, ch4_xyz, exe, skf, exec_dir)
         driver.run()
         self.assertAlmostEqual(driver.energy, -2040.619, 3)
+        vecs = [[-5.42229406e-09,  4.73928044e-09, -4.73928066e-09],
+                [6.28875782e-01,  6.28875792e-01,  6.28875784e-01],
+                [-6.28875792e-01, -6.28875785e-01,  6.28875785e-01],
+                [6.28875782e-01, -6.28875784e-01, -6.28875785e-01],
+                [-6.28875780e-01,  6.28875779e-01, -6.28875773e-01]]
+        coords = np.asarray(vecs)
+        np.testing.assert_array_almost_equal(driver.coordinates, coords, 5)
+        atoms = ["C", "H", "H", "H", "H"]
+        self.assertListEqual(driver.atoms, atoms)
 
 
 if __name__ == "__main__":

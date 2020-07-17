@@ -100,10 +100,13 @@ class DTNNDriver(object):
 
     def __init__(self, model, xyz, exe, skf, exec_dir):
         self._model_path = model
-        self.xyz = read(xyz)
+        self.xyz = xyz
+        self.ase_atoms = read(xyz)
         self.exec_dir = exec_dir
         self.base_dir = getcwd()
         self._energy = None
+        self._coords = None
+        self._atoms = None
         self._model = None
         self._schnet_calc = None
         environ["DFTB_COMMAND"] = exe
@@ -119,7 +122,7 @@ class DTNNDriver(object):
         chdir(self.exec_dir)
         ase_dftb = dftb.Dftb(
             label="dftb_calculator",
-            atoms=self.xyz,
+            atoms=self.ase_atoms,
             run_manyDftb_steps=True,
             Hamiltonian_SCC="Yes",
             Hamiltonian_ThirdOrderFull="Yes",
@@ -133,14 +136,16 @@ class DTNNDriver(object):
             Analysis_="",
             Analysis_CalculateForces="Yes")
         mix = mixing.SumCalculator([ase_dftb, self._schnet_calc])
-        self.xyz.set_calculator(mix)
-        opt = BFGS(self.xyz, logfile="BFGS_optimization.log", trajectory=None)
+        self.ase_atoms.set_calculator(mix)
+        opt = BFGS(self.ase_atoms, logfile="BFGS_optimization.log")
         # Redirect opt.run() STDOUT and STERR prints to file
         with CaptureSTDOUT() as outputs, CaptureSTDERR(errors) as errors:
             opt.run(fmax=0.00005)
         opt.logfile.close()
         ev2kcal = Units.ev2au * Units.au2kcal
-        self._energy = self.xyz.get_total_energy()[0] * ev2kcal
+        self._energy = self.ase_atoms.get_total_energy()[0] * ev2kcal
+        self._coords = self.ase_atoms.get_positions()
+        self._atoms = list(self.ase_atoms.symbols)
         with open("BFGS_output.log", "w") as outfile:
             for line in outputs:
                 outfile.write(line)
@@ -153,6 +158,22 @@ class DTNNDriver(object):
     def energy(self):
         """Returns calculated system energy in kcal/mol."""
         return self._energy
+
+    @property
+    def coordinates(self):
+        """Returns the optimized geometry vectors.
+
+        @:returns numpy Nx3 ndarray.
+        """
+        return self._coords
+
+    @property
+    def atoms(self):
+        """Returns the geometry atom list.
+
+        @:returns list of strings.
+        """
+        return self._atoms
 
 
 def run_testset(set_definition, model, dftbplus, skf):
@@ -176,7 +197,7 @@ def run_testset(set_definition, model, dftbplus, skf):
             exec_dir = get_random_folder(prefix="dtnn_run_")
             driver = DTNNDriver(model, xyz, dftbplus, skf, exec_dir)
             driver.run()
-            systems[sys_name] = driver.energy
+            systems[sys_name] = driver
             rmtree(exec_dir)
     return systems
 

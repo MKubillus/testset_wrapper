@@ -18,7 +18,7 @@ def main():
     for testset in settings["Testsets"]:
         set_definition = settings["Testsets"][testset]
         dftb_calcs[testset] = dftbplus_runner.run_testset(set_definition,
-                                                            hsd, dftbplus)
+                                                          hsd, dftbplus)
         if dtnn:
             dtnn_calcs[testset] = dtnn_runner.run_testset(
                 set_definition, model, dftbplus, skf)

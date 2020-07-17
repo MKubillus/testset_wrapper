@@ -9,6 +9,12 @@ import libtestset.results as results
 import unittest
 
 
+class DummyDriver(object):
+
+    def __init__(self, energy):
+        self.energy = energy
+
+
 class TestResults(unittest.TestCase):
 
     def setUp(self):
@@ -38,11 +44,11 @@ class TestResults(unittest.TestCase):
             results.AtomizationEnergy("wom.bat", 0.0, 1.0)
 
     def test_reaction_energy(self):
-        systems = {"c2h6": -3580.085689008599,
-                   "ch4": -2028.4592464933714,
-                   "h2o": -2555.0106334067514,
-                   "c2h5oh": -5648.755518949199,
-                   "h2": -420.8596485791793}
+        systems = {"c2h6": DummyDriver(-3580.085689008599),
+                   "ch4": DummyDriver(-2028.4592464933714),
+                   "h2o": DummyDriver(-2555.0106334067514),
+                   "c2h5oh": DummyDriver(-5648.755518949199),
+                   "h2": DummyDriver(-420.8596485791793)}
         reaction = "c2h6 + h2o -> c2h5oh + h2"
         reac = results.Reaction(reaction, systems, -24.300)
         self.assertAlmostEqual(reac.energy, -25.481, 3)
@@ -60,11 +66,11 @@ class TestResults(unittest.TestCase):
 
     def test_deviation(self):
         reac_list = []
-        systems = {"c2h6": -3580.085689008599,
-                   "ch4": -2028.4592464933714,
-                   "h2o": -2555.0106334067514,
-                   "c2h5oh": -5648.755518949199,
-                   "h2": -420.8596485791793}
+        systems = {"c2h6": DummyDriver(-3580.085689008599),
+                   "ch4": DummyDriver(-2028.4592464933714),
+                   "h2o": DummyDriver(-2555.0106334067514),
+                   "c2h5oh": DummyDriver(-5648.755518949199),
+                   "h2": DummyDriver(-420.8596485791793)}
         reaction = "c2h6 + h2o -> c2h5oh + h2"
         reac_list.append(results.Reaction(reaction, systems, -24.300))
         reaction = "2 c2h6 + 2 h2o -> 2 c2h5oh + 2 h2"
@@ -101,13 +107,13 @@ class TestResults(unittest.TestCase):
                 ]
             }
         }
-        systems = {"Sample Energies": {"c2h6": -3580.085689008599,
-                                       "ch4": -2028.4592464933714},
-                   "Sample Reactions": {"c2h6": 712.5,
-                                        "h2o": 232.4,
-                                        "c2h5oh": 809.0,
-                                        "h2": 109.8,
-                                        "c4h8": 1155.2}
+        systems = {"Sample Energies": {"c2h6": DummyDriver(-3580.085689008599),
+                                       "ch4": DummyDriver(-2028.4592464933714)},
+                   "Sample Reactions": {"c2h6": DummyDriver(712.5),
+                                        "h2o": DummyDriver(232.4),
+                                        "c2h5oh": DummyDriver(809.0),
+                                        "h2": DummyDriver(109.8),
+                                        "c4h8": DummyDriver(1155.2)}
                    }
         results.write_results(testsets, systems)
         assert(exists("DFTB_deviations.csv"))
@@ -138,22 +144,20 @@ class TestResults(unittest.TestCase):
                 ]
             }
         }
-        dftb_systems = {"Sample Energies": {"c2h6": -3580.085689008599,
-                                            "ch4": -2028.4592464933714},
-                   "Sample Reactions": {"c2h6": 712.5,
-                                        "h2o": 232.4,
-                                        "c2h5oh": 809.0,
-                                        "h2": 109.8,
-                                        "c4h8": 1155.2}
-                   }
-        dtnn_systems = {"Sample Energies": {"c2h6": -3613.830,
-                                            "ch4": -2040.619},
-                        "Sample Reactions": {"c2h6": 712.5,
-                                             "h2o": 232.4,
-                                             "c2h5oh": 809.0,
-                                             "h2": 109.8,
-                                             "c4h8": 1155.2}
-                   }
+        dftb_systems = {"Sample Energies": {"c2h6": DummyDriver(-3580.085689),
+                                            "ch4": DummyDriver(-2028.459246)},
+                        "Sample Reactions": {"c2h6": DummyDriver(712.5),
+                                             "h2o": DummyDriver(232.4),
+                                             "c2h5oh": DummyDriver(809.0),
+                                             "h2": DummyDriver(109.8),
+                                             "c4h8": DummyDriver(1155.2)}}
+        dtnn_systems = {"Sample Energies": {"c2h6": DummyDriver(-3613.830),
+                                            "ch4": DummyDriver(-2040.619)},
+                        "Sample Reactions": {"c2h6": DummyDriver(712.5),
+                                             "h2o": DummyDriver(232.4),
+                                             "c2h5oh": DummyDriver(809.0),
+                                             "h2": DummyDriver(109.8),
+                                             "c4h8": DummyDriver(1155.2)}}
         results.write_results(testsets, dftb_systems, dtnn_systems)
         assert(exists("DFTB_deviations.csv"))
         assert(exists("Sample Energies.csv"))

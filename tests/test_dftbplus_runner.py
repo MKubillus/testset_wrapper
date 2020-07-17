@@ -5,6 +5,7 @@ from pathlib import Path
 from shutil import rmtree
 
 import libtestset.dftbplus_runner as dftb
+import numpy as np
 import unittest
 
 
@@ -40,6 +41,15 @@ class TestDFTBPlusRunner(unittest.TestCase):
         driver = dftb.DFTBPlusDriver("dftb+", hsd, ch4_xyz, exec_dir)
         driver.run()
         self.assertAlmostEqual(driver.energy, -2028.4592464933714, 3)
+        atoms = ['C', 'H', 'H', 'H', 'H']
+        self.assertListEqual(driver.atoms, atoms)
+        vecs = [[0.0,         0.0,         0.0],
+                [0.62382296,  0.62382296,  0.62382296],
+                [-0.62382296, -0.62382296,  0.62382296],
+                [0.62382296, -0.62382296, -0.62382296],
+                [-0.62382296,  0.62382296, -0.62382296]]
+        coords = np.asarray(vecs)
+        np.testing.assert_array_almost_equal(driver.coordinates, coords, 5)
 
     def test_run_dftb_sccerror(self):
         exec_dir = join(self.exec_dir, "run_dftb_sccerror")
